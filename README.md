@@ -1,67 +1,51 @@
-# gesture-recognition
-This project aims to develop a 3D Convolutional Neural Network (CNN) to recognize hand gestures for controlling a smart TV. A camera mounted on the TV continuously monitors the user's gestures, which are mapped to specific commands
-👍 Thumbs up → Increase volume
-👎 Thumbs down → Decrease volume
-👈 Left swipe → Rewind 10 seconds
-👉 Right swipe → Fast-forward 10 seconds
-✋ Stop → Pause the movie
-The goal is to create a robust gesture recognition model deployable on smart TVs.
 
-Dataset Overview
-The dataset consists of several hundred short video clips, each categorized into one of the five gestures. Each video is about 2-3 seconds long and broken into 30 sequential frames. These videos were recorded using different webcams, leading to two resolutions: 360x360 and 120x160 pixels. The dataset simulates real-world usage conditions similar to a smart TV's camera setup.
+# 📌 Gesture Recognition using Deep Learning  
 
-📌 Data Source: https://drive.google.com/uc?id=1ehyrYBQ5rbQQe6yL4XbLWe3FMvuVUGiL
+## 📖 Project Overview  
+This project implements a deep learning-based **hand gesture recognition** system to control a smart TV using a **3D Convolutional Neural Network (CNN)** and **Recurrent Neural Networks (RNNs)** such as **LSTM and GRU**. The model detects five different hand gestures via a webcam and maps them to specific commands for controlling video playback.  
 
-Neural Network Architectures Used
-Two primary deep learning architectures were considered for video-based gesture recognition:
+## 🎯 Problem Statement  
+The goal is to build a gesture recognition model that runs on a **smart TV camera** and correctly identifies five predefined hand gestures:  
 
-1. CNN + RNN (LSTM/GRU)
-This hybrid approach processes each frame using a 2D CNN to extract feature vectors, which are then passed to an RNN (LSTM or GRU) to capture temporal dependencies.
+- **👍 Thumbs Up** → Increase Volume  
+- **👎 Thumbs Down** → Decrease Volume  
+- **⬅️ Left Swipe** → Jump Backward 10 sec  
+- **➡️ Right Swipe** → Jump Forward 10 sec  
+- **✋ Stop** → Pause Video  
 
-Why LSTM/GRU? These models effectively understand sequential information. GRUs are computationally more efficient than LSTMs since they have three gates instead of four, leading to faster training without significant accuracy loss.
-Transfer Learning: Pre-trained CNNs like ResNet or VGGNet were used to extract image features, reducing training time while leveraging existing powerful models.
-2. 3D Convolutional Networks
-Instead of treating videos as separate image frames, this model processes them as a 4D tensor (Height × Width × Time × Channels).
+## 📂 Dataset  
+The dataset consists of short videos (2-3 seconds) recorded by different users, each performing one of the five gestures. Each video is split into **30 frames** and processed for model training.  
 
-3D Convolutions extend traditional 2D convolutions by applying filters across the time axis, allowing the network to capture motion features.
-While powerful, 3D CNNs require higher computational resources compared to CNN-RNN architectures.
-Data Ingestion Pipeline & Custom Generator
-To efficiently handle video data, a custom batch data generator was implemented using Python's generator functions.
+- **Resolutions:** 360x360 or 120x160  
+- **Data Source:** [Dataset Link](https://drive.google.com/uc?id=1ehyrYBQ5rbQQe6yL4XbLWe3FMvuVUGiL)  
 
-Unlike Keras' built-in image generators, this custom generator efficiently loads video sequences in memory-friendly batches, leveraging lazy evaluation.
-Generators optimize memory usage, execution speed, and batch-wise gradient descent, which is crucial for large datasets.
-The custom generator supports various data formats (e.g., images, CSV files, audio), making it versatile and scalable.
-Experiments & Model Selection
-Experiments were conducted to find the most effective model:
+## 🏗️ Model Architectures & Experiments  
+The following architectures were tested to determine the best-performing model:  
 
-| Model Architecture | Key Layers | Validation Accuracy | Decision & Explanation |
-| --- | --- | --- |
-| CNN + LSTM |	Conv2D + LSTM + Dense |	87%	| Selected as the final model due to optimal balance of performance and efficiency (<1M parameters). |
+| Model Architecture               | Key Layers                           | Validation Accuracy | Decision & Explanation |
+|----------------------------------|--------------------------------------|---------------------|------------------------|
+| **CNN + LSTM**                   | Conv2D + LSTM + Dense                | **87%**             | ✅ *Selected as the final model* due to high accuracy and efficiency (<1M parameters). |
+| **CNN + GRU**                    | Conv2D + GRU + Dense                 | 79%                 | Good performance but slightly lower than LSTM. |
+| **3D CNN**                        | Conv3D + MaxPooling3D + Dense        | 83%                 | High complexity, lower accuracy than CNN-LSTM. |
+| **CNN + Transfer Learning (ResNet)** | Pre-trained ResNet + Dense           | 75%                 | 🚫 Too many parameters (~25M), making training slow with suboptimal accuracy. |
 
-| CNN + GRU |	Conv2D + GRU + Dense |	79%	| Performed well but slightly lower accuracy than LSTM. Comparable in efficiency. |
+### ✅ **Final Model: CNN + LSTM**  
+The **CNN-LSTM** model was selected as the best-performing architecture, offering a good balance of accuracy and computational efficiency.  
 
-| 3D CNN |	Conv3D + MaxPooling3D + Dense	| 83% (Best of Augmented) |	Higher complexity but underperformed compared to CNN-LSTM. |
+## 🔄 Data Ingestion Pipeline  
+A **custom data generator** was implemented instead of Keras’ built-in image data generators to handle **video batches efficiently**. This prevents memory overload while processing large datasets.  
 
-| CNN + Transfer Learning (ResNet) |	Pre-trained ResNet + Dense	| 75% |	Too many parameters (~25M), making training sluggish with suboptimal accuracy. |
+## ⚡ Training Strategies & Challenges  
+- **Learning Rate Adjustment:** Reduced to **0.0002** using Adam optimizer to avoid gradient plateau.  
+- **Batch-wise Gradient Descent:** Used **Python generators** to handle large datasets efficiently.  
+- **Regularization & Dropout:** Explored **dropout techniques**, but improvements were limited.  
 
-Training Challenges:
+## 📌 Scope for Improvement  
+- Fine-tuning **learning rate and regularization** to boost accuracy.  
+- Implementing **recurrent dropout** for LSTMs.  
+- Exploring **bi-directional LSTMs or Vision Transformers** for better temporal sequence learning.  
 
-Sometimes, validation loss stagnates or increases despite multiple epochs, indicating a plateau in learning.
-Reducing the learning rate (e.g., 0.0002 for Adam optimizer) helped optimize performance.
-Final Model Chosen:
+## 📜 License  
+This project is open-source under the **MIT License**.  
 
-CNN + LSTM model was selected as the best performer with <1M parameters and 87% validation accuracy.
-Transfer learning with ResNet was tested but was computationally heavy (25M+ parameters) and slower, yielding only 75% accuracy.
-The CNN-LSTM model provided an optimal balance between accuracy and computational efficiency.
-
-Scope for Improvement
-Potential enhancements for future work:
-
-✅ Fine-tuning learning rate & regularization for better generalization.
-
-✅ Dropout in LSTM layers to reduce overfitting (not fully explored).
-
-✅ Bidirectional LSTMs for improved sequence modeling.
-
-✅ Vision Transformers (ViTs) for advanced video representation learning.
-The focus would be on better regularization, dropout strategies, and temporal sequence learning to enhance performance.
+---
