@@ -37,8 +37,11 @@ Experiments were conducted to find the most effective model:
 | Model Architecture | Key Layers | Validation Accuracy | Decision & Explanation |
 | --- | --- | --- |
 | CNN + LSTM |	Conv2D + LSTM + Dense |	87%	| Selected as the final model due to optimal balance of performance and efficiency (<1M parameters). |
+
 | CNN + GRU |	Conv2D + GRU + Dense |	79%	| Performed well but slightly lower accuracy than LSTM. Comparable in efficiency. |
+
 | 3D CNN |	Conv3D + MaxPooling3D + Dense	| 83% (Best of Augmented) |	Higher complexity but underperformed compared to CNN-LSTM. |
+
 | CNN + Transfer Learning (ResNet) |	Pre-trained ResNet + Dense	| 75% |	Too many parameters (~25M), making training sluggish with suboptimal accuracy. |
 
 Training Challenges:
@@ -53,8 +56,12 @@ The CNN-LSTM model provided an optimal balance between accuracy and computationa
 
 Scope for Improvement
 Potential enhancements for future work:
+
 ✅ Fine-tuning learning rate & regularization for better generalization.
+
 ✅ Dropout in LSTM layers to reduce overfitting (not fully explored).
+
 ✅ Bidirectional LSTMs for improved sequence modeling.
+
 ✅ Vision Transformers (ViTs) for advanced video representation learning.
 The focus would be on better regularization, dropout strategies, and temporal sequence learning to enhance performance.
